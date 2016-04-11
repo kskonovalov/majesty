@@ -7,6 +7,7 @@
  */
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../helpers/functions.php';
+require_once __DIR__.'/../config/config.php';
 
 $app = new Silex\Application();
 
@@ -26,7 +27,7 @@ $app->get('/', function () {
     $jsonData = [
         "common" => [
             "version" => "1.0",
-            "api_key" => "AIIODFcBAAAAKKmkRwIAnKzdUaTd557HEkMXw0j_ATfYsqEAAAAAAAAAAAAmql2xRcbq3koznpKW5pT1ab4OuA=="
+            "api_key" => APIKEY
         ],
         "ip" => $ip
     ];
