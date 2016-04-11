@@ -6,6 +6,7 @@
  * Time: 23.42
  */
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../helpers/functions.php';
 
 $app = new Silex\Application();
 
@@ -13,9 +14,42 @@ $app = new Silex\Application();
 $app['debug'] = true;
 
 $app->get('/', function () {
-    $output = 'Hello world';
 
-    return $output;
+
+    $ip = getUserIP();
+    //$ip = "178.127.26.170"; //to test
+
+    if(!$ip) {
+        return "Can't get your ip, sorry =(";
+    }
+
+    $jsonData = [
+        "common" => [
+            "version" => "1.0",
+            "api_key" => "AIIODFcBAAAAKKmkRwIAnKzdUaTd557HEkMXw0j_ATfYsqEAAAAAAAAAAAAmql2xRcbq3koznpKW5pT1ab4OuA=="
+        ],
+        "ip" => $ip
+    ];
+
+    $client = new GuzzleHttp\Client();
+
+    $response = $client->request('POST', 'http://api.lbs.yandex.net/geolocation', [
+        'content-type' => 'application/json',
+        'form_params'    => [
+            'json' => json_encode($jsonData)
+        ]
+    ]);
+
+    if($response->getStatusCode() == 200) {
+        $results = json_decode($response->getBody());
+
+        $result["lat"] = $results->position->latitude;
+        $result["lon"] = $results->position->longitude;
+
+        return json_encode($result);
+    }
+    else return "Nothing found";
 });
+
 
 $app->run();
